@@ -1,3 +1,3 @@
 fun main() {
-  println("Hello from lesson 4")
+  println("Hello once more from lesson 4")
 }
