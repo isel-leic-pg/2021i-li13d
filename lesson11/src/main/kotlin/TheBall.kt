@@ -53,8 +53,8 @@ fun main() {
             drawBall(ball, cv)
         }
 
-        cv.onMouseDown {
-
+        cv.onMouseDown { mouse ->
+            ball = createBall(ball, x = mouse.x, y = mouse.y)
         }
 
         cv.onKeyPressed { ke ->
