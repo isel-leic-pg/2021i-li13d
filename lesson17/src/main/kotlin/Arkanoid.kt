@@ -31,9 +31,9 @@ fun main() {
         }
 
         cv.onMouseDown { mouse ->
-//            val oldBall = ball
-//            ball = if(oldBall != null) createBall(oldBall, x = mouse.x, y = mouse.y) else createBall()
-            ball = if(ball != null) createBall(ball, x = mouse.x, y = mouse.y) else createBall()
+            val oldBall: Ball? = ball
+            ball = if(oldBall != null) createBall(oldBall, x = mouse.x, y = mouse.y) else createBall()
+            //ball = createBallNullable(ball, mouse.x, mouse.y)
         }
 
         cv.onMouseMove {
@@ -41,8 +41,9 @@ fun main() {
         }
 
         cv.onKeyPressed { ke: KeyEvent ->
-            if(ball != null) {
-                ball = newBallDependingOnKeyPressed(ball!!, ke.code, ke.char)
+            val oldBall: Ball? = ball
+            if(oldBall != null) {
+                ball = newBallDependingOnKeyPressed(oldBall, ke.code, ke.char)
             }
         }
     }
@@ -74,7 +75,7 @@ fun createArkanoid(x: Int, y: Int, width: Int = WIDTH_ARKANOID, height: Int = HE
  *
  * @return the new ball
  */
-fun createBall(ball: Ball, x: Int = ball.center.x, y: Int = ball.center.y, radius: Int = ball.radius, dx: Int = ball.velocity.dx, dy: Int = ball.velocity.dy, color: Int = ball.color): Ball? =
+fun createBall(ball: Ball, x: Int = ball.center.x, y: Int = ball.center.y, radius: Int = ball.radius, dx: Int = ball.velocity.dx, dy: Int = ball.velocity.dy, color: Int = ball.color): Ball =
         createBall(x, y, radius, dx, dy, color)
 
 /**
@@ -87,8 +88,11 @@ fun createBall(x: Int = WIDTH / 2, y: Int = HEIGHT / 2, radius: Int = RADIUS, dx
 }
 
 
-fun createBall(ball: Ball?, x: Int, y): Ball {
-
+fun createBallNullable(ball: Ball?, x: Int, y: Int): Ball {
+    return if(ball != null)
+        createBall(ball, x = x, y = y)
+    else
+        createBall()
 }
 
 
@@ -97,7 +101,7 @@ fun createBall(ball: Ball?, x: Int, y): Ball {
 
 val colors = listOf(RED, YELLOW, GREEN)
 
-fun randomColor(): Int = colors[Random.nextInt(0, colors.size)]
+fun randomColor(): Int = colors[(0..colors.size).random()]
 
 
 
@@ -133,7 +137,7 @@ fun Ball.move() : Ball {
     return createBall(newPosition.x, newPosition.y, this.radius, newVelocity.dx, newVelocity.dy, this.color)
 }
 
-fun newBallDependingOnKeyPressed(ball: Ball, code: Int, char: Char): Ball? =
+fun newBallDependingOnKeyPressed(ball: Ball, code: Int, char: Char): Ball =
         when (code) {
             LEFT_CODE -> createBall(ball, RADIUS, HEIGHT / 2)
             RIGHT_CODE -> createBall(ball, WIDTH - RADIUS, HEIGHT / 2)
