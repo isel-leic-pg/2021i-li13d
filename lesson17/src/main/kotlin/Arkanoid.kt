@@ -1,6 +1,5 @@
 
 import pt.isel.canvas.*
-import kotlin.random.Random
 
 
 val WIDTH = 600
@@ -9,41 +8,59 @@ val RADIUS = 25
 val WIDTH_ARKANOID = 90
 val HEIGHT_ARKANOID = 25
 
+
+// The Arkanoid Game a rectangular closed area, composed of a Racket (the Arkanoid),
+// one or more Balls and several Bricks. The ball moves and reflects on the walls and on the Arkanoid
+
+
 data class Position(val x: Int, val y: Int)
 data class Size(val width: Int, val height: Int)
 data class Velocity(val dx: Int, val dy: Int)
 data class Ball(val center: Position, val radius: Int, val velocity: Velocity, val color: Int)
 data class Arkanoid(val position: Position, val size: Size, val color: Int = RED)
 
+data class ArkanoidGame(val ball: Ball?, val arkanoid: Arkanoid)
 
 
 fun main() {
     onStart {
-        var ball: Ball? = null
-        var arkanoid = createArkanoid(WIDTH / 2 - WIDTH_ARKANOID/2, HEIGHT-10-HEIGHT_ARKANOID)
+        val arkanoid = createArkanoid(WIDTH / 2 - WIDTH_ARKANOID/2, HEIGHT-10-HEIGHT_ARKANOID)
+
+        // DEBUG code
+        //val debugBall = createBall(x = WIDTH / 2 - WIDTH_ARKANOID/2, y = HEIGHT-10-HEIGHT_ARKANOID-30, dx = 0, dy = 0)
+        //var arkanoidGame: ArkanoidGame = createArkanoidGame(debugBall, arkanoid)
+        // DEBUG code end
+
+        var arkanoidGame: ArkanoidGame = createArkanoidGame(null,  arkanoid)
         val cv = Canvas(WIDTH, HEIGHT)
 
-        cv.drawGame(ball, arkanoid)
-
+        cv.drawGame(arkanoidGame)
         cv.onTimeProgress(50) {
-            ball = ball?.move()
-            cv.drawGame(ball, arkanoid)
+            val oldBall = arkanoidGame.ball
+            if(oldBall != null) {
+                val newBal = oldBall.move()
+                arkanoidGame = createArkanoidGame(newBal, arkanoidGame.arkanoid)
+                cv.drawGame(arkanoidGame)
+            }
         }
 
         cv.onMouseDown { mouse ->
-            val oldBall: Ball? = ball
-            ball = if(oldBall != null) createBall(oldBall, x = mouse.x, y = mouse.y) else createBall()
-            //ball = createBallNullable(ball, mouse.x, mouse.y)
+            val oldBall = arkanoidGame.ball
+            val newBall = if(oldBall != null) createBall(oldBall, x = mouse.x, y = mouse.y) else createBall()
+            arkanoidGame = createArkanoidGame(newBall, arkanoidGame.arkanoid)
+
         }
 
         cv.onMouseMove {
-            arkanoid = createArkanoid(it.x - WIDTH_ARKANOID/2, arkanoid.position.y)
+            val arkanoid = createArkanoid(it.x - WIDTH_ARKANOID/2, arkanoid.position.y)
+            arkanoidGame = createArkanoidGame(arkanoidGame.ball, arkanoid)
         }
 
         cv.onKeyPressed { ke: KeyEvent ->
-            val oldBall: Ball? = ball
+            val oldBall: Ball? = arkanoidGame.ball
             if(oldBall != null) {
-                ball = newBallDependingOnKeyPressed(oldBall, ke.code, ke.char)
+                val newBall = newBallDependingOnKeyPressed(oldBall, ke.code, ke.char)
+                arkanoidGame = createArkanoidGame(newBall, arkanoidGame.arkanoid)
             }
         }
     }
@@ -52,15 +69,18 @@ fun main() {
     }
 }
 
-private fun Canvas.drawGame(ball: Ball?, arkanoid: Arkanoid) {
+
+fun createArkanoidGame(ball: Ball?, arkanoid: Arkanoid) = ArkanoidGame(ball, arkanoid)
+
+private fun Canvas.drawGame(arkanoidGame: ArkanoidGame) {
     this.erase()
 
 //    if(ball != null) {
 //        ball.drawBall(this)
 //    }
 
-    ball?.drawBall(this)
-    this.drawArkanoid(arkanoid)
+    arkanoidGame.ball?.drawBall(this)
+    this.drawArkanoid(arkanoidGame.arkanoid)
 
 }
 
