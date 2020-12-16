@@ -42,6 +42,7 @@ fun main() {  // ()->Unit
             }
             if (g!=null) {
                 game = g
+                
                 arena.drawTetris(game)
             }
         }

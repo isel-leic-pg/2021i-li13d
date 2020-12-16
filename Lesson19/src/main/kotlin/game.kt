@@ -4,9 +4,9 @@ import pt.isel.canvas.WHITE
 /**
  * Represents the game status.
  *
- * Aggregates the falling piece ([moving]) and the blocks already fixed ([fixed]).
+ * Aggregates the falling piece ([moving]) and the blocks already fixed ([fixedBlocks]).
  */
-data class Tetris(val moving:Piece, val fixed:List<Block>, val finish:Boolean=false)
+data class Tetris(val moving:Piece, val fixedBlocks:List<Block>, val finish:Boolean=false)
 
 /**
  * Draw the game.
@@ -15,7 +15,7 @@ data class Tetris(val moving:Piece, val fixed:List<Block>, val finish:Boolean=fa
 fun Canvas.drawTetris(g:Tetris) {
     erase()
     drawPiece(g.moving)
-    g.fixed.forEach { drawBlock(it) }
+    g.fixedBlocks.forEach { drawBlock(it) }
     if (g.finish)
         drawText(0,height/2,"END", WHITE,64)
 }
@@ -29,11 +29,11 @@ fun Canvas.drawTetris(g:Tetris) {
  */
 fun Tetris.move(dx:Int, dy:Int) :Tetris? {
     if (finish) return null
-    val piece = moving.move(dx, dy, fixed)
+    val piece = moving.move(dx, dy, fixedBlocks)
     return when {
         piece==null             -> null
-        piece.toFix( fixed )    -> fixPiece(piece)
-        else                -> Tetris( piece, fixed)
+        piece.toFix( fixedBlocks )    -> fixPiece(piece)
+        else                -> Tetris( piece, fixedBlocks)
     }
 }
 
@@ -46,7 +46,7 @@ fun Tetris.move(dx:Int, dy:Int) :Tetris? {
  * @return The resulting game status
  */
 fun Tetris.fixPiece(p:Piece) :Tetris {
-    var f = fixed + p.blks
+    var f = fixedBlocks + p.blks
 
     GRID_Y.forEach { y ->
         val line = f.filter { it.y==y }
@@ -60,7 +60,7 @@ fun Tetris.fixPiece(p:Piece) :Tetris {
 
 fun Tetris.rotate():Tetris? {
     if (finish) return null
-    val p = moving.rotate(fixed) ?: return null
-    return Tetris(p,fixed,finish)
+    val p = moving.rotate(fixedBlocks) ?: return null
+    return Tetris(p,fixedBlocks,finish)
 }
 
