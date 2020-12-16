@@ -1,0 +1,25 @@
+
+
+- Valor:  27  "abc"  true  'A'  listOf("abc","xpto")
+    Representação de Informação.
+    É de um determinado.
+
+- Tipo:  :Char   :Int  :List<String>  :Unit
+    Forma de catalogar a informação.
+
+- Opereradores:   +  *  [] ...
+    Manipular valores.
+
+- Expressão:  a+27  32  "abc"+2  (if(a>2) 5 else 3)
+    Quando avaliada produz um novo valor de um determinado tipo.
+
+- Instrução:  x=2+3  if(a>2) { println("abc") }
+    Quando executada produz um efeito ou uma ação
+
+- Bloco de instruções
+
+- Funções:
+    ....
+
+- Classe:
+    Para definir novos tipos.
