@@ -6,7 +6,7 @@ plugins {
 
 repositories {
     mavenCentral()
-    flatDir { dirs("libs") }
+    flatDir { dirs("../libs") }
 }
 
 dependencies {
